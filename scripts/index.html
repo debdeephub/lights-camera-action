@@ -1,79 +1,26 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            color: #ffd700;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-        }
-
-        #stage {
-            position: relative;
-            width: 90vw;
-            height: 60vh;
-            border: 5px solid #ffd700;
-            /* Gold frame */
-            box-shadow: 0 0 20px #ff4500;
-            display: none;
-            /* Hidden until image is received */
-        }
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Bollywood Filter: High Saturation, Warmth, and Contrast */
-            filter: saturate(1.8) sepia(0.2) contrast(1.1) brightness(1.1);
-        }
-
-        .overlay {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px #000;
-            border-left: 4px solid #ff4500;
-            padding-left: 10px;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="stage">
-        <img id="output-image" src="" />
-        <div class="overlay" id="caption">Blockbuster Style</div>
-    </div>
-
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bollywood Cinema Lens</title>
+  </head>
+  <body>
     <script>
-        // Listen for messages from the AI Edge App
-        window.addEventListener('message', (event) => {
-            const { type, payload } = event.data;
+      window['ai_edge_gallery_get_result'] = async (data) => {
+        if (data) {
+          // Store the data in localStorage so webview.html can access it
+          localStorage.setItem('bollywood_skill_data', data);
+        } else {
+          localStorage.removeItem('bollywood_skill_data');
+        }
 
-            if (type === 'INPUT_IMAGE' || type === 'ACTION_TRIGGER') {
-                const imgElement = document.getElementById('output-image');
-                const stage = document.getElementById('stage');
-
-                // Set image source from the AI payload
-                imgElement.src = payload.imageUri || payload.base64;
-                stage.style.display = 'block';
-
-                // Send a confirmation back to Gemma
-                window.parent.postMessage({
-                    type: 'SKILL_RESPONSE',
-                    payload: { message: "The scene is set! Your Bollywood masterpiece is ready." }
-                }, '*');
-            }
+        return JSON.stringify({
+          webview: {
+            url: `../assets/webview.html`
+          }
         });
+      };
     </script>
-</body>
-
+  </body>
 </html>
